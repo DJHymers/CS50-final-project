@@ -19,18 +19,7 @@ player.highlight = {0.4, 0.4, 1}
 function player.update(dt, pitch, ball)
     local moveX, moveY = 0, 0
 
-    if moveX ~= 0 or moveY ~= 0 then
-        player.lastMoveX = moveX
-        player.lastMoveY = moveY
-    end
-
-    if ball.owner == player then
-        player.speed = 200   -- slower when dribbling
-    else
-        player.speed = 250   -- normal speed
-    end
-
-    
+    -- Read input
     if love.keyboard.isDown("w") then moveY = moveY - 1 end
     if love.keyboard.isDown("s") then moveY = moveY + 1 end
     if love.keyboard.isDown("a") then moveX = moveX - 1 end
@@ -40,6 +29,17 @@ function player.update(dt, pitch, ball)
     if moveX ~= 0 or moveY ~= 0 then
         local len = math.sqrt(moveX * moveX + moveY * moveY)
         moveX, moveY = moveX / len, moveY / len
+
+        -- UPDATE FACING DIRECTION HERE
+        player.lastMoveX = moveX
+        player.lastMoveY = moveY
+    end
+
+    -- Slow when dribbling
+    if ball.owner == player then
+        player.speed = 200
+    else
+        player.speed = 250
     end
 
     -- Apply movement

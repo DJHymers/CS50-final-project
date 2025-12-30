@@ -14,6 +14,11 @@ ball.vy = 0
 ball.friction = 0.96   -- slows the ball each frame
 ball.maxSpeed = 600
 
+ball.charge = 0
+ball.maxCharge = 1.2   -- seconds to reach full power
+ball.shootPower = 600
+ball.passPower = 350
+
 function ball.update(dt, pitch, player)
     
     -- If ball is free, check for pickup
@@ -33,17 +38,20 @@ function ball.update(dt, pitch, player)
         local py = ball.owner.y + ball.owner.h/2
 
         -- Determine direction of movement
-        local dirX, dirY = ball.owner.lastMoveX, ball.owner.lastMoveY
+        local dirX = ball.owner.lastMoveX
+        local dirY = ball.owner.lastMoveY
 
-        -- If player is standing still, keep ball in front
+        -- If somehow still zero, default to facing forwards
         if dirX == 0 and dirY == 0 then
-            dirX = 0
-            dirY = -1
+            dirX = 1
+            dirY = 0
         end
 
-        -- Normalize
+        -- Normalize safely
         local len = math.sqrt(dirX*dirX + dirY*dirY)
+        if len == 0 then len = 1 end  -- prevent NaN
         dirX, dirY = dirX/len, dirY/len
+
 
         -- Position ball in front of player
         ball.x = px + dirX * ball.holdDistance
