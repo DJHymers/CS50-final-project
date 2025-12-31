@@ -1,16 +1,20 @@
 -- pitch.lua
+-- Handles drawing the football pitch and goals
+
 local pitch = {}
 
-local pitchX = 40
-local pitchY = 40
-local pitchW = 1024 - 80
-local pitchH = 576 - 80
+-- ==============================
+-- Pitch dimensions
+-- ==============================
+local pitchX, pitchY = 40, 40
+local pitchW, pitchH = 1024 - 80, 576 - 80
 
-pitch.x = pitchX 
-pitch.y = pitchY 
-pitch.w = pitchW 
-pitch.h = pitchH
+pitch.x, pitch.y = pitchX, pitchY
+pitch.w, pitch.h = pitchW, pitchH
 
+-- ==============================
+-- Draw the pitch
+-- ==============================
 function pitch.draw()
     -- Draw pitch background
     love.graphics.setColor(0.1, 0.5, 0.1)
@@ -19,111 +23,63 @@ function pitch.draw()
     -- Draw pitch border
     love.graphics.setColor(1, 1, 1)
     love.graphics.setLineWidth(4)
-    love.graphics.rectangle("line", 40, 40, 1024 - 80, 576 - 80)
+    love.graphics.rectangle("line", pitchX, pitchY, pitchW, pitchH)
 
-    -- Draw centre line
-    love.graphics.line(512, 40, 512, 576 - 40)
+    -- Centre line
+    love.graphics.line(pitchX + pitchW/2, pitchY, pitchX + pitchW/2, pitchY + pitchH)
 
-    -- Draw penalty boxes
-    love.graphics.rectangle("line",
-    pitchX,
-    pitchY + pitchH * 0.2,
-    120,
-    pitchH * 0.6)
+    -- ==============================
+    -- Penalty boxes
+    -- ==============================
+    local penaltyBoxW, penaltyBoxH = 120, pitchH * 0.6
+    local sixYardBoxW, sixYardBoxH = 60, pitchH * 0.3
 
-    love.graphics.rectangle("line",
-    pitchX + pitchW - 120,
-    pitchY + pitchH * 0.2,
-    120,
-    pitchH * 0.6)
+    -- Left penalty box
+    love.graphics.rectangle("line", pitchX, pitchY + pitchH * 0.2, penaltyBoxW, penaltyBoxH)
+    -- Right penalty box
+    love.graphics.rectangle("line", pitchX + pitchW - penaltyBoxW, pitchY + pitchH * 0.2, penaltyBoxW, penaltyBoxH)
 
-    -- Draw six yard box
-    love.graphics.rectangle("line",
-    pitchX,
-    pitchY + pitchH * 0.35,
-    60,
-    pitchH * 0.3)
+    -- Six-yard boxes
+    love.graphics.rectangle("line", pitchX, pitchY + pitchH * 0.35, sixYardBoxW, sixYardBoxH)
+    love.graphics.rectangle("line", pitchX + pitchW - sixYardBoxW, pitchY + pitchH * 0.35, sixYardBoxW, sixYardBoxH)
 
-    love.graphics.rectangle("line",
-    pitchX + pitchW - 60,
-    pitchY + pitchH * 0.35,
-    60,
-    pitchH * 0.3)
+    -- ==============================
+    -- Centre circle
+    -- ==============================
+    love.graphics.circle("line", pitchX + pitchW/2, pitchY + pitchH/2, 60)
 
-    -- Draw centre circle
-    love.graphics.circle("line",
-    pitchX + pitchW / 2,
-    pitchY + pitchH / 2,
-    60)
-
-    -- Penalty box semi circles
-    love.graphics.arc("line",
-    "open",
-    pitchX + 120,            
-    pitchY + pitchH / 2,              
-    60,                               
-    math.rad(-90),                    
-    math.rad(90)                      
-    )
-
-    love.graphics.arc("line",
-    "open",
-    pitchX + pitchW - 120,
-    pitchY + pitchH / 2,
-    60,
-    math.rad(90),
-    math.rad(270)
-    )
+    -- Penalty arcs
+    love.graphics.arc("line", "open", pitchX + penaltyBoxW, pitchY + pitchH/2, 60, math.rad(-90), math.rad(90))
+    love.graphics.arc("line", "open", pitchX + pitchW - penaltyBoxW, pitchY + pitchH/2, 60, math.rad(90), math.rad(270))
 
     -- Centre spot
-    love.graphics.circle("fill",
-    pitchX + pitchW / 2,
-    pitchY + pitchH / 2,
-    5
-    )
+    love.graphics.circle("fill", pitchX + pitchW/2, pitchY + pitchH/2, 5)
 
     -- Penalty spots
-    love.graphics.circle("fill",
-    pitchX + 120 - 40,         
-    pitchY + pitchH / 2,
-    5
-    )
-
-    love.graphics.circle("fill",
-    pitchX + pitchW - 120 + 40,
-    pitchY + pitchH / 2,
-    5
-    )
+    love.graphics.circle("fill", pitchX + penaltyBoxW - 40, pitchY + pitchH/2, 5)
+    love.graphics.circle("fill", pitchX + pitchW - penaltyBoxW + 40, pitchY + pitchH/2, 5)
 
     -- Corner arcs
-    love.graphics.arc("line", "open",
-    pitchX, pitchY,
-    20,
-    math.rad(0),
-    math.rad(90)
-    )
+    love.graphics.arc("line", "open", pitchX, pitchY, 20, math.rad(0), math.rad(90))
+    love.graphics.arc("line", "open", pitchX, pitchY + pitchH, 20, math.rad(270), math.rad(360))
+    love.graphics.arc("line", "open", pitchX + pitchW, pitchY, 20, math.rad(90), math.rad(180))
+    love.graphics.arc("line", "open", pitchX + pitchW, pitchY + pitchH, 20, math.rad(180), math.rad(270))
 
-    love.graphics.arc("line", "open",
-    pitchX, pitchY + pitchH,
-    20,
-    math.rad(270),
-    math.rad(360)
-    )
+    -- ==============================
+    -- Goals
+    -- ==============================
+    local goalWidth, goalDepth, postW = 120, 30, 8
+    local goalY = pitchY + pitchH/2 - goalWidth/2
 
-    love.graphics.arc("line", "open",
-    pitchX + pitchW, pitchY,
-    20,
-    math.rad(90),
-    math.rad(180)
-    )
+    -- Draw nets (semi-transparent)
+    love.graphics.setColor(1, 1, 1, 0.3)
+    love.graphics.rectangle("fill", pitchX - goalDepth, goalY, goalDepth, goalWidth)        -- left net
+    love.graphics.rectangle("fill", pitchX + pitchW, goalY, goalDepth, goalWidth)         -- right net
 
-    love.graphics.arc("line", "open",
-    pitchX + pitchW, pitchY + pitchH,
-    20,
-    math.rad(180),
-    math.rad(270)
-    )
-
+    -- Draw goal posts (solid)
+    love.graphics.setColor(0.5, 0.5, 0.5)
+    love.graphics.rectangle("fill", pitchX - postW, goalY, postW, goalWidth)              -- left posts
+    love.graphics.rectangle("fill", pitchX + pitchW, goalY, postW, goalWidth)             -- right posts
 end
 
 return pitch
